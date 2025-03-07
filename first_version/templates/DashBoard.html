@@ -1,0 +1,510 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socialize | Your Social Media Platform</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            color: #0d6efd !important;
+        }
+        .sidebar {
+            position: sticky;
+            top: 80px;
+        }
+        .post-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .post-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .profile-pic-small {
+            width: 32px;
+            height: 32px;
+        }
+        .suggested-profile {
+            transition: all 0.3s ease;
+        }
+        .suggested-profile:hover {
+            background-color: #f8f9fa;
+        }
+        .action-icons i {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.2s ease;
+        }
+        .action-icons i:hover {
+            color: #0d6efd;
+            transform: scale(1.1);
+        }
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <h1 class="logo-text">Socialize</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Search Bar (Center) -->
+            {% comment %} <div class="d-none d-md-block mx-auto">
+                <form class="d-flex">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="search" class="form-control bg-light border-start-0" placeholder="Search" aria-label="Search">
+                    </div>
+                </form>
+            </div> {% endcomment %}
+            
+            <!-- Nav Icons (Right) -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'DashBoard_view' %}"><i class="bi bi-house-door-fill fs-4"></i></a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-plus-square fs-4" data-bs-toggle="modal" data-bs-target="#createPostModal"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'show_nearby_coders' %}"><i class="bi bi-compass fs-4"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "notification" %}"><i class="bi bi-heart fs-4"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'show_profile' user_profile.id %}">
+                            
+                          
+                            <img src="{{ user_profile.photo.url  }}" alt="{{ user_profile.name}}" class="profile-pic">
+                            
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-4">
+        <div class="row">
+            <!-- Left Sidebar with Navigation (Hidden on mobile) -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="sidebar">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active d-flex align-items-center" href="#">
+                                        <i class="bi bi-house-door-fill me-3"></i> Home
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" href="#">
+                                        <i class="bi bi-search me-3"></i> Explore
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" href="{% url "notification" %}">
+                                        <i class="bi bi-bell me-3"></i> Notifications
+                                    </a>
+                                </li>
+                              
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" href="{%url "show_saved_posts"%}">
+                                        <i class="bi bi-bookmarks me-3"></i> Saved
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" href="{% url 'show_profile' user_profile.id %}">
+                                        <i class="bi bi-person me-3"></i> Profile
+                                    </a>
+                                </li>
+                                <li class="nav-item mt-3">
+                                    <a class="nav-link d-flex align-items-center" href="{% url 'show_profile' user_profile.id %}">
+                                        <i class="bi bi-gear me-3"></i> Settings
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed (Center) -->
+            <div class="col-lg-6 col-md-8">
+                <!-- Stories -->
+                
+                <!-- Posts -->
+                <!-- Post 1 -->
+                {% for post in posts %}
+                <div class="card post-card mb-4 mt-2">
+                    <div class="card-header bg-white border-0 d-flex align-items-center p-3">
+                        <a href="{% url 'show_profile' post.author.id %}">
+                        <img src="{{post.author.photo.url}}" alt="User" class="profile-pic me-2">
+                    </a>
+                        <div>
+                            <strong>{{post.author.name}}</strong>
+                            <small class="text-muted d-block">San Francisco, CA</small>
+                        </div>
+                        {% if request.user == post.author.user %}
+                            <div class="ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editPostModal-{{ post.id }}">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal-{{ post.id }}">
+                                    <i class="bi bi-pencil"></i> Delete
+                                </button>
+                            </div>
+                        {% endif %}
+                       
+                    </div>
+                    <img src="{{post.post_image.url}}" class="card-img-top" alt="Post Image">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between action-icons mb-2">
+                            <div>
+
+
+                                {% if post.id in liked_posts %}
+                                    <a href="{% url 'add_like' post.id %}">
+                                <i class="bi bi-heart-fill me-2 text-danger"></i>
+                            </a>
+                                {% else %}
+                        <a href="{% url 'add_like' post.id %}">
+                            <i class="bi bi-heart me-2"></i>
+                        </a>
+                            {% endif %}
+
+                                {% comment %} <a href="{% url 'add_like' post.id%}"><i class="bi bi-heart me-2"></i></a> {% endcomment %}
+                                <i class="bi bi-chat me-2"></i>
+                                <i class="bi bi-send"></i>
+                            </div>
+                            <div>
+                               <a href="{% url 'save_post' post.id %}"> 
+                                {% if post.id in saved_posts %}
+                                <i class="bi bi-bookmark-fill text-dark"></i>
+                                
+                                {% else %}
+                                <i class="bi bi-bookmark" ></i>
+                                {% endif %}
+                                
+                            </a>
+                            </div>
+                        </div>
+                        <p class="card-text"><strong>{{post.like_count}} likes</strong></p>
+                        <p class="card-text"><strong>{{post.author.name}}</strong> {{post.caption}}</p>
+                        <p class="text-muted">
+                            <span class="comment-toggle" data-post-id="{{ post.id }}" style="cursor: pointer; color: blue;">
+                                {{ post.comment_count }} comments
+                            </span>
+                        </p>
+                        
+                        <div id="comments-section-{{ post.id }}" class="comments-section mt-2 p-2 border rounded bg-light" style="display: none;">
+                           
+                            {% for comment in post.comments %}
+                            <div class="d-flex align-items-start mb-2">
+                                <img src="{{ comment.name.photo.url }}" class="profile-pic-small me-2" alt="User">
+                                <div>
+                                    <strong>{{ comment.name.name }}</strong>
+                                    <p class="mb-1">{{ comment.comment_body }}</p>
+                                    <small class="text-muted">{{ comment.date_added|date:"F d, Y" }}</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">No comments yet.</p>
+                        {% endfor %}
+
+                        </div>
+                        
+                        <small class="text-muted">{{ post.created_at|date:"F d, Y" }}</small>
+                        <form method="POST" action="{% url "add_comment" post.id%}">
+                            {% csrf_token %}
+                        <div class="d-flex mt-3 align-items-center">
+                            <input type="text" class="form-control bg-light border-0" placeholder="Add a comment..." name="comment">
+                            <button class="btn text-primary fw-bold">Post</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Edit Post Modal - Place this inside the post loop -->
+<div class="modal fade" id="editPostModal-{{post.id}}" tabindex="-1" aria-labelledby="editPostModalLabel-{{post.id}}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPostModalLabel-{{post.id}}">Edit Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit Post Form -->
+                <form method="POST" enctype="multipart/form-data" action="{% url 'edit_post' post.id%}" >
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    
+                    <!-- Caption Field -->
+                    <div class="mb-3">
+                        <label for="caption-{{ post.id }}" class="form-label">Caption</label>
+                        <input type="text" class="form-control" id="caption-{{ post.id }}" name="caption" value="{{ post.caption }}" maxlength="100" required>
+                        <div class="form-text">Maximum 100 characters</div>
+                    </div>
+                    
+                    <!-- Current Image Preview -->
+                    <div class="mb-3">
+                        <label class="form-label">Current Image</label>
+                        <div>
+                            <img src="{{ post.post_image.url }}" alt="Current post image" class="img-fluid rounded mb-2" style="max-height: 200px;">
+                        </div>
+                    </div>
+                    
+                    <!-- New Image Upload Field -->
+                    <div class="mb-3">
+                        <label for="post_image-{{ post.id }}" class="form-label">Upload New Image (Optional)</label>
+                        <input class="form-control" type="file" id="post_image-{{ post.id }}" name="post_image" accept="image/*">
+                        <div class="form-text">Leave empty to keep current image</div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Edit Post Modal - Place this inside the post loop -->
+<div class="modal fade" id="deletePostModal-{{post.id}}" tabindex="-1" aria-labelledby="editPostModalLabel-{{post.id}}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPostModalLabel-{{post.id}}">Delete Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit Post Form -->
+                <form method="POST" enctype="multipart/form-data" action="{% url 'delete_post' post.id%}" >
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    
+                    <!-- Caption Field -->
+                    
+                    
+                    <!-- Current Image Preview -->
+                   
+                    <!-- New Image Upload Field -->
+                    
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+                {% endfor %}
+            </div>
+
+            <!-- Right Sidebar (Suggestions) -->
+            <div class="col-lg-3 col-md-4 d-none d-md-block">
+                <div class="sidebar">
+                    <!-- User Profile Preview -->
+                    
+                    
+                    <!-- Suggestions -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted fw-bold">Suggestions For You</span>
+                       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                       
+                    {% if nearby_coders %}
+                    {% for coders,distance in nearby_coders %}
+                    <!-- Suggested User 1 -->
+                   
+                    <div class="d-flex align-items-center mb-3 suggested-profile p-2 rounded">
+                        <a href="{% url 'show_profile' coders.id %}">
+                        <img src="{{coders.photo.url}}" alt="Suggested User" class="profile-pic me-3">
+                    </a>
+                        <div>
+                            <strong>{{coders}}</strong>
+                           
+                    
+                        </div>
+                        <span class="badge bg-success rounded-pill mx-3">{{ distance }} km</span>
+                        <a href="{% url 'follow_unfollow' coders.id %}" class="ms-auto text-primary fw-bold">
+                            {% if coders in request.user.user_profile.following.all %}
+                                Unfollow
+                            {% else %}
+                                Follow
+                            {% endif %} 
+                           
+                        </a>
+                    </div>
+             
+                    {% endfor %}
+                    {% endif %}
+                    <!-- Footer Links -->
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <a href="#" class="text-muted text-decoration-none">About</a> ·
+                            <a href="#" class="text-muted text-decoration-none">Help</a> ·
+                            <a href="#" class="text-muted text-decoration-none">Press</a> ·
+                            <a href="#" class="text-muted text-decoration-none">API</a> ·
+                            <a href="#" class="text-muted text-decoration-none">Jobs</a> ·
+                            <a href="#" class="text-muted text-decoration-none">Privacy</a> ·
+                            <a href="#" class="text-muted text-decoration-none">Terms</a> ·
+                            <a href="#" class="text-muted text-decoration-none">Locations</a>
+                        </small>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <small class="text-muted">© 2025 SOCIALIZE</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel">Create New Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Post Creation Form -->
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'post_create_view' %}">
+                        {% csrf_token %}
+                        
+                        <!-- Caption Field -->
+                        <div class="mb-3">
+                            <label for="caption" class="form-label">Caption</label>
+                            <input type="text" class="form-control" id="caption" name="caption" maxlength="100" required>
+                            <div class="form-text">Maximum 100 characters</div>
+                        </div>
+                        
+                        <!-- Image Upload Field -->
+                        <div class="mb-3">
+                            <label for="post_image" class="form-label">Upload Image</label>
+                            <input class="form-control" type="file" id="post_image" name="post_image" accept="image/*" required>
+                        </div>
+                        
+                        <!-- Author field is handled by the backend -->
+                       
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".comment-toggle").forEach(function (toggle) {
+                toggle.addEventListener("click", function () {
+                    let postId = this.getAttribute("data-post-id");
+                    let commentSection = document.getElementById("comments-section-" + postId);
+                    if (commentSection.style.display === "none") {
+                        commentSection.style.display = "block";
+                    } else {
+                        commentSection.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
+    
+    
+
+
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

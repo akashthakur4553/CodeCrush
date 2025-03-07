@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socialize | Your Social Media Platform</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            color: #0d6efd !important;
+        }
+        .sidebar {
+            position: sticky;
+            top: 80px;
+        }
+        .post-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .post-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .profile-pic-small {
+            width: 32px;
+            height: 32px;
+        }
+        .suggested-profile {
+            transition: all 0.3s ease;
+        }
+        .suggested-profile:hover {
+            background-color: #f8f9fa;
+        }
+        .action-icons i {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.2s ease;
+        }
+        .action-icons i:hover {
+            color: #0d6efd;
+            transform: scale(1.1);
+        }
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <h1 class="logo-text">Socialize</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Search Bar (Center) -->
+            {% comment %} <div class="d-none d-md-block mx-auto">
+                <form class="d-flex">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="search" class="form-control bg-light border-start-0" placeholder="Search" aria-label="Search">
+                    </div>
+                </form>
+            </div> {% endcomment %}
+            
+            <!-- Nav Icons (Right) -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'DashBoard_view' %}"><i class="bi bi-house-door-fill fs-4"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-chat-dots fs-4"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-plus-square fs-4" data-bs-toggle="modal" data-bs-target="#createPostModal"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'show_nearby_coders' %}"><i class="bi bi-compass fs-4"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-heart fs-4"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            
+                          
+                            {% comment %} <img src="{{ user_profile.photo.url  }}" alt="{{ user_profile.name}}" class="profile-pic"> {% endcomment %}
+                            
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-4">
+        <div class="row">
+            <!-- Left Sidebar with Navigation (Hidden on mobile) -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="sidebar">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active d-flex align-items-center" href="{% url "DashBoard_view" %}">
+                                        <i class="bi bi-house-door-fill me-3"></i> Home
+                                    </a>
+                                </li>
+                                
+                                
+                                
+                                
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed (Center) -->
+            <div class="col-lg-6 col-md-8">
+                <!-- Stories -->
+                
+                <!-- Posts -->
+                <!-- Post 1 -->
+                {% for post in saved_posts %}
+                <div class="card post-card mb-4 mt-2">
+                    <div class="card-header bg-white border-0 d-flex align-items-center p-3">
+                        <a href="{% url 'show_profile' post.post.author.id %}">
+                        <img src="{{post.post.author.photo.url}}" alt="User" class="profile-pic me-2">
+                    </a>
+                        <div>
+                            <strong>{{post.post.author.name}}</strong>
+                            <small class="text-muted d-block">San Francisco, CA</small>
+                        </div>
+                       
+                       
+                    </div>
+                    <img src="{{post.post.post_image.url}}" class="card-img-top" alt="Post Image">
+                    <div class="card-body">
+                        <p class="card-text"><strong>{{post.post.author.name}}</strong> {{post.post.caption}}</p>
+                    </div>
+
+
+                                
+                       
+                </div>    
+                        
+                {% endfor %}
+
+               
+                
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Edit Post Modal - Place this inside the post loop -->
+   
+       
+    
+    
+
+
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
