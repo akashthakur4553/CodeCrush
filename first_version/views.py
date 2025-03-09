@@ -101,6 +101,7 @@ def find_coders_nearby(lat, lon, radius_km=10000, current_user=None):
 
 @login_required
 def DashBoard_view(request):
+
     profile = User_profile.objects.filter(user=request.user).first()
     user = request.user
     # Avoid crash
@@ -121,6 +122,7 @@ def DashBoard_view(request):
     liked_posts = []
     comments_dict = {}
     for post in posts:
+        post.likes_counting = Likes.objects.filter(post=post).count()
         post.comments = Comments.objects.filter(post_name=post)
         if Likes.objects.filter(post=post, user=profile).exists():
             liked_posts.append(post.id)
@@ -223,24 +225,65 @@ def delete_post(request, post_id):
 
 @login_required
 def add_comment(request, post_id):
-    post = get_object_or_404(Posts, id=post_id)
-    profile = get_object_or_404(User_profile, user=request.user)
-    if request.method == "POST":
+    if request.htmx:
+        print("got a htmx request.......................................")
+        post = get_object_or_404(Posts, id=post_id)
+        profile = get_object_or_404(User_profile, user=request.user)
+
         comment = request.POST.get("comment")
         new_comment = Comments.objects.create(
             comment_body=comment, post_name=post, name=profile
         )
         new_comment.save()
-        return redirect("DashBoard_view")
+        post.comments = Comments.objects.filter(post_name=post)
+        post.comments_counting = Comments.objects.filter(post_name=post).count()
+        return render(request, "snippets/comment_section.html", {"post": post})
+
+    return redirect("DashBoard_view")
+
+
+# @login_required
+# def add_like(request, post_id):
+#     liked_posts = []
+#     posts = get_object_or_404(Posts, id=post_id)
+#     profile = get_object_or_404(User_profile, user=request.user)
+#     for post in posts:
+
+#         if Likes.objects.filter(post=post, user=profile).exists():
+#             liked_posts.append(post.id)
+#     if request.htmx:
+#         post = get_object_or_404(Posts, id=post_id)
+#         profile = get_object_or_404(User_profile, user=request.user)
+#         new_like, created = Likes.objects.get_or_create(user=profile, post=post)
+#         if not created:
+#             new_like.delete()
+#         print("hello world...........................................................")
+#         render(request, "snippets/like_section.html", {"liked_posts": liked_posts})
+
+#     return redirect("DashBoard_view")
 
 
 @login_required
 def add_like(request, post_id):
     post = get_object_or_404(Posts, id=post_id)
     profile = get_object_or_404(User_profile, user=request.user)
-    new_like, created = Likes.objects.get_or_create(user=profile, post=post)
+
+    like, created = Likes.objects.get_or_create(user=profile, post=post)
+
     if not created:
-        new_like.delete()
+        like.delete()  # Unlike the post if already liked
+
+    if request.htmx:
+        liked_posts = Likes.objects.filter(user=profile).values_list(
+            "post_id", flat=True
+        )
+        like_count = Likes.objects.filter(post=post).count()
+        return render(
+            request,
+            "snippets/like_section.html",
+            {"post": post, "liked_posts": liked_posts, "like_count": like_count},
+        )
+
     return redirect("DashBoard_view")
 
 
@@ -278,11 +321,49 @@ def Logout_view(request):
 
 
 def save_post(request, post_id):
-    post = get_object_or_404(Posts, id=post_id)
-    current_user = get_object_or_404(User_profile, user=request.user)
-    if saved_posts.objects.filter(user=current_user).filter(post=post).exists():
-        saved_posts.objects.filter(user=current_user).filter(post=post).delete()
-    else:
-        saved_post = saved_posts.objects.create(post=post, user=current_user)
-        saved_post.save()
+    if request.htmx:
+        post = get_object_or_404(Posts, id=post_id)
+        current_user = get_object_or_404(User_profile, user=request.user)
+        saved_postu = saved_posts.objects.filter(user=current_user)
+
+        if saved_posts.objects.filter(user=current_user).filter(post=post).exists():
+            saved_posts.objects.filter(user=current_user).filter(post=post).delete()
+        else:
+            saved_poste = saved_posts.objects.create(post=post, user=current_user)
+            saved_poste.save()
+        saved_posti = []
+        for saved_postss in saved_postu:
+            saved_posti.append(saved_postss.post.id)
+        return render(
+            request,
+            "snippets/savepost_section.html",
+            {"saved_posts": saved_posti, "post": post},
+        )
+        # return render(request, "snippets/savepost_section.html")
     return redirect("DashBoard_view")
+
+
+# @login_required
+# def save_post(request, post_id):
+#     if request.htmx:
+#         post = get_object_or_404(Posts, id=post_id)
+#         current_user = get_object_or_404(User_profile, user=request.user)
+
+#         # Check if the post is already saved
+#         if saved_posts.objects.filter(user=current_user, post=post).exists():
+#             saved_posts.objects.filter(user=current_user, post=post).delete()
+#         else:
+#             saved_posts.objects.create(post=post, user=current_user)
+
+#         # Get the updated saved posts
+#         saved_post_ids = saved_posts.objects.filter(user=current_user).values_list(
+#             "post_id", flat=True
+#         )
+
+#         return render(
+#             request,
+#             "snippets/savepost_section.html",
+#             {"saved_posts": saved_post_ids, "post": post},
+#         )
+
+#     return redirect("DashBoard_view")

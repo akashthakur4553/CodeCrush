@@ -26,8 +26,8 @@ import cloudinary.api
 SECRET_KEY = "django-insecure-_n_xqwb9bm+lm-4#cxq30arusyphynpz_rmbsr(@&zv@%u4)$#"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = ["codecrush-k0rg.onrender.com", "127.0.0.1"]
 
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "first_version",
     "cloudinary",
     "cloudinary_storage",
+    "django_htmx",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "CodeCrush.urls"

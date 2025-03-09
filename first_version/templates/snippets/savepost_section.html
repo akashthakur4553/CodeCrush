@@ -1,0 +1,9 @@
+<div id="savepost-section-{{ post.id }}">
+    <a hx-get="{% url 'save_post' post.id %}" hx-target="#savepost-section-{{ post.id }}" hx-swap="outerHTML"> 
+     {% if post.id in saved_posts %}
+         <i class="bi bi-bookmark-fill text-dark"></i>
+     {% else %}
+         <i class="bi bi-bookmark"></i>
+     {% endif %}
+    </a>
+</div>

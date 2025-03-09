@@ -1,0 +1,17 @@
+
+<div id="like-section-{{ post.id }}">
+    {% if post.id in liked_posts %}
+        <a hx-get="{% url 'add_like' post.id %}" hx-target="#like-section-{{ post.id }}" hx-swap="outerHTML">
+            <i class="bi bi-heart-fill me-2 text-danger"></i>
+            <p class="card-text"><strong>
+                {% if like_count %}{{like_count}}{% else %}{{ post.likes_counting}}{% endif %} likes</strong></p>
+        </a>
+    {% else %}
+        <a hx-get="{% url 'add_like' post.id %}" hx-target="#like-section-{{ post.id }}" hx-swap="outerHTML">
+            <i class="bi bi-heart me-2"></i>
+            <p class="card-text"><strong>
+                {% if like_count %}{{like_count}}{% else %}{{ post.likes_counting}}{% endif %} likes</strong></p>
+        </a>
+    {% endif %}
+    
+</div>
